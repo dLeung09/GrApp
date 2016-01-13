@@ -11,7 +11,7 @@ public class AssignmentTest {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void testAssignment() {
+	public void testAssignmentShouldInitializeEmpty() {
 		Assignment assgn = new Assignment();
 		
 		assertEquals(0, assgn.weight(), 0);
@@ -20,7 +20,7 @@ public class AssignmentTest {
 	}
 	
 	@Test
-	public void testMarkShouldNotMarkUnassignedAssignment() throws UnassignedAssessmentException, InvalidGradeException {
+	public void testMarkShouldThrowExceptionOnUnassignedAssignment() throws UnassignedAssessmentException, InvalidGradeException {
 		Assignment assgn = new Assignment();
 		
 		thrown.expect(UnassignedAssessmentException.class);
@@ -31,11 +31,6 @@ public class AssignmentTest {
 	@Test
 	public void testAssignShouldPopulateWeight() throws InvalidWeightException {
 		Assignment assgn = new Assignment();
-		
-		assertEquals(0, assgn.weight(), 0);
-		assertEquals(0, assgn.grade(), 0);
-		assertEquals(false, assgn.marked());
-		
 		assgn.assign(10);
 		
 		assertEquals(10, assgn.weight(), 0);
@@ -44,29 +39,19 @@ public class AssignmentTest {
 	}
 	
 	@Test
-	public void testAssignNegativeWeightShouldThrowException() throws InvalidWeightException {
+	public void testAssignShouldThrowExceptionOnNegativeWeight() throws InvalidWeightException {
 		Assignment assgn = new Assignment();
 		
 		thrown.expect(InvalidWeightException.class);
-		
 		assgn.assign(-10);
-		
-		assertEquals(0, assgn.weight(), 0);
-		assertEquals(0, assgn.grade(), 0);
-		assertEquals(false, assgn.marked());
 	}
 	
 	@Test
-	public void testAssignTooLargeWeightShouldThrowException() throws InvalidWeightException {
+	public void testAssignShouldThrowExceptionOnTooLargeWeight() throws InvalidWeightException {
 		Assignment assgn = new Assignment();
 		
 		thrown.expect(InvalidWeightException.class);
-		
 		assgn.assign(110);
-		
-		assertEquals(0, assgn.weight(), 0);
-		assertEquals(0, assgn.grade(), 0);
-		assertEquals(false, assgn.marked());
 	}
 	
 	@Test
@@ -90,10 +75,6 @@ public class AssignmentTest {
 	public void testMarkShouldPopulateAndChangeMarked() throws InvalidWeightException, InvalidGradeException {
 		Assignment assgn = new Assignment();
 		
-		assertEquals(0, assgn.weight(), 0);
-		assertEquals(0, assgn.grade(), 0);
-		assertEquals(false, assgn.marked());
-		
 		assgn.assign(10);
 		assgn.mark(80);
 		
@@ -103,31 +84,23 @@ public class AssignmentTest {
 	}
 	
 	@Test
-	public void testMarkShouldNotAcceptNegativeGrade() throws InvalidWeightException, InvalidGradeException {
+	public void testMarkShouldThrowExceptionOnNegativeGrade() throws InvalidWeightException, InvalidGradeException {
 		Assignment assgn = new Assignment();
 		
-		thrown.expect(InvalidGradeException.class);
-		
 		assgn.assign(10);
-		assgn.mark(-80);
 		
-		assertEquals(10, assgn.weight(), 0);
-		assertEquals(0, assgn.grade(), 0);
-		assertEquals(false, assgn.marked());
+		thrown.expect(InvalidGradeException.class);
+		assgn.mark(-80);
 	}
 	
 	@Test
-	public void testMarkShouldNotAcceptTooLargeGrade() throws InvalidWeightException, InvalidGradeException {
+	public void testMarkShouldThrowExceptionOnTooLargeGrade() throws InvalidWeightException, InvalidGradeException {
 		Assignment assgn = new Assignment();
 		
-		thrown.expect(InvalidGradeException.class);
-		
 		assgn.assign(10);
-		assgn.mark(110);
 		
-		assertEquals(10, assgn.weight(), 0);
-		assertEquals(0, assgn.grade(), 0);
-		assertEquals(false, assgn.marked());
+		thrown.expect(InvalidGradeException.class);
+		assgn.mark(110);
 	}
 	
 	@Test
@@ -137,9 +110,7 @@ public class AssignmentTest {
 		assgn.assign(10);
 		assgn.mark(80);
 		
-		assertEquals(10, assgn.weight(), 0);
 		assertEquals(80, assgn.grade(), 0);
-		assertEquals(true, assgn.marked());
 		
 		assgn.mark(90);
 		
@@ -147,37 +118,43 @@ public class AssignmentTest {
 	}
 
 	@Test
-	public void testWeightShouldNotReturnZeroWhenUnassigned() throws UnassignedAssessmentException {
+	public void testWeightShouldThrowExceptionWhenUnassigned() throws UnassignedAssessmentException {
 		Assignment assgn = new Assignment();
-		
-		assertEquals(0, assgn.weight(), 0);
-		assertEquals(0, assgn.grade(), 0);
-		assertEquals(false, assgn.marked());
 		
 		thrown.expect(UnassignedAssessmentException.class);
 		
-		float weight = assgn.weight();
-		
-		System.out.println("Weight: " + weight);
+		assertEquals(0, assgn.weight(), 0);
 	}
 
 	@Test
-	public void testGradeShouldNotReturnZeroWhenUnmarked() throws InvalidWeightException {
+	public void testGradeShouldThrowExceptionWhenUnmarked() throws InvalidWeightException {
 		Assignment assgn = new Assignment();
 		
 		assgn.assign(10);
 		
-		//TODO
+		thrown.expect(UnmarkedAssessmentException.class);
+		
+		assertEquals(0, assgn.grade(), 0);
 	}
 
 	@Test
-	public void testWeightedGradeShouldReturnWeightTimesGrade() {
-		fail("Not yet implemented");
+	public void testWeightedGradeShouldReturnWeightTimesGrade() throws InvalidWeightException, InvalidGradeException {
+		Assignment assgn = new Assignment();
+		
+		assgn.assign(10);
+		assgn.mark(81);
+		
+		float weightedGrade = assgn.weightedGrade();
+		assertEquals(8.1, weightedGrade, 0);
 	}
 	
 	@Test
 	public void testWeightedGradeShouldNotReturnUnassigned() {
-		fail("Not yet implemented");
+		Assignment assgn = new Assignment();
+		
+		thrown.expect(UnassignedAssessmentException.class);
+		
+		assertEquals(0, assgn.weightedGrade(), 0);
 	}
 	
 	@Test
